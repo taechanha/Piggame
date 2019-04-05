@@ -8,19 +8,31 @@ GAME RULES:
 */
 
 var scores, roundScore, activePlayer, dice;
-const btnRoll = document.querySelector(".btn-roll"); 
+const btnRoll = document.querySelector(".btn-roll");
 const btnHold = document.querySelector(".btn-hold");
-const imgDice = document.querySelector(".dice");
+const btnNewGame = document.querySelector(".btn-new");
+const diceImg = document.querySelector(".dice");
+const GOAL_NUMBER = 10;
 var playerOneCurrent = document.querySelector("#current-0");
-scores = [0,0];
-roundScore = 0;
-activePlayer = 0;
-dice = 0;
+function init(){
+	scores = [0,0];
+	roundScore = 0;
+	activePlayer = 0;
+	dice = 0;
+	document.querySelector("#score-0").textContent = 0;
+	document.querySelector("#score-1").textContent = 0;
+	document.querySelector("#current-0").textContent = 0;
+	document.querySelector("#current-1").textContent = 0;
+	document.querySelector("#name-0").textContent = "PLAYER 1";
+	document.querySelector("#name-1").textContent = "PLAYER 2";
+	document.querySelector(".player-0-panel").classList.remove("winner");
+	document.querySelector(".player-1-panel").classList.remove("winner");
+	document.querySelector(".player-1-panel").classList.remove("active");
+	document.querySelector(".player-0-panel").classList.add("active");
+}
+init();
 
-document.querySelector("#score-0").textContent = 0;
-document.querySelector("#score-1").textContent = 0;
-document.querySelector("#current-0").textContent = 0;
-document.querySelector("#current-1").textContent = 0;
+
 
 //when clicking roll dice, dice png pops up
 //and saving the number in roundScore.
@@ -39,50 +51,52 @@ function whosActive(activeplayer){
 //	var score = document.querySelector(`#score-${activePlayer}`);
 //	score.textContent = scores[activePlayer];
 //}
-
-function rollDice(){
-	if(scores[activePlayer] <= 20){
+function rollDice() {
+	if(scores[activePlayer] < GOAL_NUMBER){
 		dice = Math.floor(Math.random() * 6 + 1);
-		imgDice.src = `dice-${dice}.png`;
-	
+		diceImg.src = `dice-${dice}.png`;
 		//default activePlayer == 0;
 		if(dice !== 1){
 			roundScore += dice;
 			document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
+
 	}
-		else{	
-			roundScore = 0;
-			activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
-			whosActive(activePlayer);
-		
+	else{ 
+		nextPlayer();
 	}
 }
 }
-btnRoll.addEventListener("click", rollDice);
-btnHold.addEventListener("click", function(){
-			// total score
+function nextPlayer(){
+	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
+	roundScore = 0;
+	document.querySelector("#current-0").textContent = 0;
+	document.querySelector("#current-1").textContent = 0;
+	whosActive(activePlayer);
+}
+function hold() {
+			// input total score
 			scores[activePlayer] += roundScore;
-			
 			// total score for UI
 			var score = document.querySelector(`#score-${activePlayer}`);
 			score.textContent = scores[activePlayer];
+			//토탈 점수에 점수 넣고 라운드 점수 초기화
 			roundScore = 0;
-			document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
-			
+			//초기화한 라운드 점수로 ui 초기화
+			var roundScoreUi = document.querySelector(`#current-${activePlayer}`).textContent;
+			roundScoreUi = roundScore;
 			//who won
-			if (scores[activePlayer] >= 20){
-				var winner = document.querySelector("#name-" + activePlayer);
-				winner.textContent = "winner";
-				document.querySelector(`.player-${activePlayer}-panel`).classList.add("winner");
-				
-				
-							
+			if (scores[activePlayer] >= GOAL_NUMBER){
+				var winnerName = document.querySelector("#name-" + activePlayer);
+				winnerName.textContent = "winner";
+				var winnerPanel = document.querySelector(`.player-${activePlayer}-panel`);
+				//winnerPanel.classList.remove("active");
+				winnerPanel.classList.add("winner");
+				winnerPanel.classList.remove("active");
 			}
 			else {
-				//next player
-				activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
-				whosActive(activePlayer);
+				nextPlayer();
 			}
-			
-			
-	});
+		}
+btnRoll.addEventListener("click", rollDice);
+btnHold.addEventListener("click", hold);
+btnNewGame.addEventListener("click", init);
