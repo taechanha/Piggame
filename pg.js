@@ -1,4 +1,4 @@
-/*
+﻿/*
 GAME RULES:
 - The game has 2 players, playing in rounds
 - In each turn, a player rolls a dice as many times as he whishes. Each result get added to his ROUND score
@@ -7,18 +7,23 @@ GAME RULES:
 - The first player to reach 100 points on GLOBAL score wins the game
 */
 
-var scores, roundScore, activePlayer, dice;
+var scores, roundScore, activePlayer, dice, checkTwelve;
 const btnRoll = document.querySelector(".btn-roll");
 const btnHold = document.querySelector(".btn-hold");
 const btnNewGame = document.querySelector(".btn-new");
 const diceImg = document.querySelector(".dice");
-const GOAL_NUMBER = 10;
+const btn = document.querySelector("#btn");
+var GOAL_NUMBER = 0;
 var playerOneCurrent = document.querySelector("#current-0");
+function inputfn(){
+	GOAL_NUMBER = document.querySelector("#inputTxt").value;
+}
 function init(){
 	scores = [0,0];
 	roundScore = 0;
 	activePlayer = 0;
 	dice = 0;
+	checkTwelve = [0,0];
 	document.querySelector("#score-0").textContent = 0;
 	document.querySelector("#score-1").textContent = 0;
 	document.querySelector("#current-0").textContent = 0;
@@ -59,7 +64,12 @@ function rollDice() {
 		if(dice !== 1){
 			roundScore += dice;
 			document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
-
+			checkTwelve[0] += dice;
+			checkTwelve[1] += 1;
+			if(checkTwelve[1] === 2 && checkTwelve[0] === 12){
+				nextPlayer();
+			
+			}
 	}
 	else{ 
 		nextPlayer();
@@ -69,6 +79,8 @@ function rollDice() {
 function nextPlayer(){
 	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
 	roundScore = 0;
+	dice = 0;
+	checkTwelve = [0,0];
 	document.querySelector("#current-0").textContent = 0;
 	document.querySelector("#current-1").textContent = 0;
 	whosActive(activePlayer);
@@ -100,3 +112,4 @@ function hold() {
 btnRoll.addEventListener("click", rollDice);
 btnHold.addEventListener("click", hold);
 btnNewGame.addEventListener("click", init);
+btn.addEventListener("click", inputfn);
